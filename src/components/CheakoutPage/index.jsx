@@ -3,23 +3,20 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import isAuth from "../../../Middleware/isAuth";
+import DateFormat from "../../../utils/DateFormat";
 import apiRequest from "../../../utils/apiRequest";
 import auth from "../../../utils/auth";
+import languageModel from "../../../utils/languageModel";
+import settings from "../../../utils/settings";
 import wordCount from "../../../utils/wordCount";
 import { fetchCart } from "../../store/Cart";
+import EmptyCardError from "../EmptyCardError";
 import InputCom from "../Helpers/InputCom";
 import LoaderStyleOne from "../Helpers/Loaders/LoaderStyleOne";
 import PageTitle from "../Helpers/PageTitle";
 import Selectbox from "../Helpers/Selectbox";
-import isAuth from "../../../Middleware/isAuth";
-import DateFormat from "../../../utils/DateFormat";
-import settings from "../../../utils/settings";
-import Sslcommerce from "../Helpers/icons/Sslcommerce";
 import CheckProductIsExistsInFlashSale from "../Shared/CheckProductIsExistsInFlashSale";
-import languageModel from "../../../utils/languageModel";
-import Link from "next/link";
-import ShopNowBtn from "../Helpers/Buttons/ShopNowBtn";
-import EmptyCardError from "../EmptyCardError";
 
 function CheakoutPage() {
   const { websiteSetup } = useSelector((state) => state.websiteSetup);
@@ -136,8 +133,7 @@ function CheakoutPage() {
   const getAllAddress = () => {
     axios
       .get(
-        `${process.env.NEXT_PUBLIC_BASE_URL}api/user/checkout?token=${
-          auth().access_token
+        `${process.env.NEXT_PUBLIC_BASE_URL}api/user/checkout?token=${auth().access_token
         }`
       )
       .then((res) => {
@@ -145,7 +141,7 @@ function CheakoutPage() {
           !!(
             res.data &&
             res.data.sslcommerz &&
-            parseInt( res.data.sslcommerz.status) === 1
+            parseInt(res.data.sslcommerz.status) === 1
           )
         );
         setPaypalStatus(
@@ -248,8 +244,7 @@ function CheakoutPage() {
       getAllAddress();
       axios
         .get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}api/user/address/create?token=${
-            auth().access_token
+          `${process.env.NEXT_PUBLIC_BASE_URL}api/user/address/create?token=${auth().access_token
           }`
         )
         .then((res) => {
@@ -267,8 +262,7 @@ function CheakoutPage() {
       setCountry(value.id);
       axios
         .get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}api/user/state-by-country/${
-            value.id
+          `${process.env.NEXT_PUBLIC_BASE_URL}api/user/state-by-country/${value.id
           }?token=${auth().access_token}`
         )
         .then((res) => {
@@ -287,8 +281,7 @@ function CheakoutPage() {
       setState(value.id);
       axios
         .get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}api/user/city-by-state/${
-            value.id
+          `${process.env.NEXT_PUBLIC_BASE_URL}api/user/city-by-state/${value.id
           }?token=${auth().access_token}`
         )
         .then((res) => {
@@ -605,59 +598,46 @@ function CheakoutPage() {
                 });
             } else if (selectPayment && selectPayment === "paypal") {
               setStrpLoading(true);
-              const url = `${
-                process.env.NEXT_PUBLIC_BASE_URL
-              }user/checkout/paypal-react-web-view?token=${
-                auth().access_token
-              }&shipping_method_id=${parseInt(
-                selectedRule
-              )}&shipping_address_id=${selectedShipping}&coupon=${
-                couponCode && couponCode.code
-              }&billing_address_id=${selectedBilling}&success_url=${
-                typeof window !== "undefined" && window.location.origin
+              const url = `${process.env.NEXT_PUBLIC_BASE_URL
+                }user/checkout/paypal-react-web-view?token=${auth().access_token
+                }&shipping_method_id=${parseInt(
+                  selectedRule
+                )}&shipping_address_id=${selectedShipping}&coupon=${couponCode && couponCode.code
+                }&billing_address_id=${selectedBilling}&success_url=${typeof window !== "undefined" && window.location.origin
                   ? window.location.origin + "/order/"
                   : ""
-              }&faild_url=${
-                typeof window !== "undefined" && window.location.origin
+                }&faild_url=${typeof window !== "undefined" && window.location.origin
                   ? window.location.origin + "/payment-faild"
                   : ""
-              }`;
+                }`;
               router.push(url);
               localStorage.removeItem("coupon_set_date");
               localStorage.removeItem("coupon");
             } else if (selectPayment && selectPayment === "razorpay") {
-              const url = `${
-                process.env.NEXT_PUBLIC_BASE_URL
-              }user/checkout/razorpay-order?token=${
-                auth().access_token
-              }&shipping_method_id=${parseInt(
-                selectedRule
-              )}&shipping_address_id=${selectedShipping}&coupon=${
-                couponCode && couponCode.code
-              }&billing_address_id=${selectedBilling}`;
+              const url = `${process.env.NEXT_PUBLIC_BASE_URL
+                }user/checkout/razorpay-order?token=${auth().access_token
+                }&shipping_method_id=${parseInt(
+                  selectedRule
+                )}&shipping_address_id=${selectedShipping}&coupon=${couponCode && couponCode.code
+                }&billing_address_id=${selectedBilling}`;
               await axios
                 .get(url)
                 .then((res) => {
                   const order_id = res.data && res.data.order_id;
                   const amount = res.data && res.data.amount;
                   if (res.data) {
-                    const provideUrl = `${
-                      process.env.NEXT_PUBLIC_BASE_URL
-                    }user/checkout/razorpay-web-view?token=${
-                      auth().access_token
-                    }&shipping_address_id=${selectedShipping}&coupon=${
-                      couponCode && couponCode.code
-                    }&billing_address_id=${selectedBilling}&shipping_method_id=${parseInt(
-                      selectedRule
-                    )}&frontend_success_url=${
-                      typeof window !== "undefined" && window.location.origin
+                    const provideUrl = `${process.env.NEXT_PUBLIC_BASE_URL
+                      }user/checkout/razorpay-web-view?token=${auth().access_token
+                      }&shipping_address_id=${selectedShipping}&coupon=${couponCode && couponCode.code
+                      }&billing_address_id=${selectedBilling}&shipping_method_id=${parseInt(
+                        selectedRule
+                      )}&frontend_success_url=${typeof window !== "undefined" && window.location.origin
                         ? window.location.origin + "/order/"
                         : ""
-                    }&frontend_faild_url=${
-                      typeof window !== "undefined" && window.location.origin
+                      }&frontend_faild_url=${typeof window !== "undefined" && window.location.origin
                         ? window.location.origin + "/payment-faild"
                         : ""
-                    }&request_from=react_web&amount=${amount}&order_id=${order_id}`;
+                      }&request_from=react_web&amount=${amount}&order_id=${order_id}`;
                     router.push(provideUrl);
                     localStorage.removeItem("coupon_set_date");
                     localStorage.removeItem("coupon");
@@ -667,86 +647,66 @@ function CheakoutPage() {
                   console.log(err);
                 });
             } else if (selectPayment && selectPayment === "flutterWave") {
-              const url = `${
-                process.env.NEXT_PUBLIC_BASE_URL
-              }user/checkout/flutterwave-web-view?token=${
-                auth().access_token
-              }&shipping_method_id=${parseInt(
-                selectedRule
-              )}&shipping_address_id=${selectedShipping}&coupon=${
-                couponCode && couponCode.code
-              }&billing_address_id=${selectedBilling}&request_from=react_web&frontend_success_url=${
-                typeof window !== "undefined" && window.location.origin
+              const url = `${process.env.NEXT_PUBLIC_BASE_URL
+                }user/checkout/flutterwave-web-view?token=${auth().access_token
+                }&shipping_method_id=${parseInt(
+                  selectedRule
+                )}&shipping_address_id=${selectedShipping}&coupon=${couponCode && couponCode.code
+                }&billing_address_id=${selectedBilling}&request_from=react_web&frontend_success_url=${typeof window !== "undefined" && window.location.origin
                   ? window.location.origin + "/order/"
                   : ""
-              }&frontend_faild_url=${
-                typeof window !== "undefined" && window.location.origin
+                }&frontend_faild_url=${typeof window !== "undefined" && window.location.origin
                   ? window.location.origin + "/payment-faild"
                   : ""
-              }`;
+                }`;
               router.push(url);
               localStorage.removeItem("coupon_set_date");
               localStorage.removeItem("coupon");
             } else if (selectPayment && selectPayment === "mollie") {
-              const url = `${
-                process.env.NEXT_PUBLIC_BASE_URL
-              }user/checkout/pay-with-mollie?token=${
-                auth().access_token
-              }&shipping_method_id=${parseInt(
-                selectedRule
-              )}&shipping_address_id=${selectedShipping}&coupon=${
-                couponCode && couponCode.code
-              }&billing_address_id=${selectedBilling}&request_from=react_web&frontend_success_url=${
-                typeof window !== "undefined" && window.location.origin
+              const url = `${process.env.NEXT_PUBLIC_BASE_URL
+                }user/checkout/pay-with-mollie?token=${auth().access_token
+                }&shipping_method_id=${parseInt(
+                  selectedRule
+                )}&shipping_address_id=${selectedShipping}&coupon=${couponCode && couponCode.code
+                }&billing_address_id=${selectedBilling}&request_from=react_web&frontend_success_url=${typeof window !== "undefined" && window.location.origin
                   ? window.location.origin + "/order/"
                   : ""
-              }&frontend_faild_url=${
-                typeof window !== "undefined" && window.location.origin
+                }&frontend_faild_url=${typeof window !== "undefined" && window.location.origin
                   ? window.location.origin + "/payment-faild"
                   : ""
-              }`;
+                }`;
               router.push(url);
               localStorage.removeItem("coupon_set_date");
               localStorage.removeItem("coupon");
             } else if (selectPayment && selectPayment === "instamojo") {
-              const url = `${
-                process.env.NEXT_PUBLIC_BASE_URL
-              }user/checkout/pay-with-instamojo?token=${
-                auth().access_token
-              }&shipping_method_id=${parseInt(
-                selectedRule
-              )}&shipping_address_id=${selectedShipping}&coupon=${
-                couponCode && couponCode.code
-              }&billing_address_id=${selectedBilling}&request_from=react_web&frontend_success_url=${
-                typeof window !== "undefined" && window.location.origin
+              const url = `${process.env.NEXT_PUBLIC_BASE_URL
+                }user/checkout/pay-with-instamojo?token=${auth().access_token
+                }&shipping_method_id=${parseInt(
+                  selectedRule
+                )}&shipping_address_id=${selectedShipping}&coupon=${couponCode && couponCode.code
+                }&billing_address_id=${selectedBilling}&request_from=react_web&frontend_success_url=${typeof window !== "undefined" && window.location.origin
                   ? window.location.origin + "/order/"
                   : ""
-              }&frontend_faild_url=${
-                typeof window !== "undefined" && window.location.origin
+                }&frontend_faild_url=${typeof window !== "undefined" && window.location.origin
                   ? window.location.origin + "/payment-faild"
                   : ""
-              }`;
+                }`;
               router.push(url);
               localStorage.removeItem("coupon_set_date");
               localStorage.removeItem("coupon");
             } else if (selectPayment && selectPayment === "paystack") {
-              const url = `${
-                process.env.NEXT_PUBLIC_BASE_URL
-              }user/checkout/paystack-web-view?token=${
-                auth().access_token
-              }&shipping_method_id=${parseInt(
-                selectedRule
-              )}&shipping_address_id=${selectedShipping}&coupon=${
-                couponCode && couponCode.code
-              }&billing_address_id=${selectedBilling}&request_from=react_web&frontend_success_url=${
-                typeof window !== "undefined" && window.location.origin
+              const url = `${process.env.NEXT_PUBLIC_BASE_URL
+                }user/checkout/paystack-web-view?token=${auth().access_token
+                }&shipping_method_id=${parseInt(
+                  selectedRule
+                )}&shipping_address_id=${selectedShipping}&coupon=${couponCode && couponCode.code
+                }&billing_address_id=${selectedBilling}&request_from=react_web&frontend_success_url=${typeof window !== "undefined" && window.location.origin
                   ? window.location.origin + "/order/"
                   : ""
-              }&frontend_faild_url=${
-                typeof window !== "undefined" && window.location.origin
+                }&frontend_faild_url=${typeof window !== "undefined" && window.location.origin
                   ? window.location.origin + "/payment-faild"
                   : ""
-              }`;
+                }`;
               router.push(url);
               localStorage.removeItem("coupon_set_date");
               localStorage.removeItem("coupon");
@@ -776,23 +736,18 @@ function CheakoutPage() {
                   toast.success(err.response && err.response.message);
                 });
             } else if (selectPayment && selectPayment === "sslcommerce") {
-              const url = `${
-                process.env.NEXT_PUBLIC_BASE_URL
-              }user/checkout/sslcommerz-web-view?token=${
-                auth().access_token
-              }&shipping_method_id=${parseInt(
-                selectedRule
-              )}&shipping_address_id=${selectedShipping}&coupon=${
-                couponCode && couponCode.code
-              }&billing_address_id=${selectedBilling}&request_from=react_web&frontend_success_url=${
-                typeof window !== "undefined" && window.location.origin
+              const url = `${process.env.NEXT_PUBLIC_BASE_URL
+                }user/checkout/sslcommerz-web-view?token=${auth().access_token
+                }&shipping_method_id=${parseInt(
+                  selectedRule
+                )}&shipping_address_id=${selectedShipping}&coupon=${couponCode && couponCode.code
+                }&billing_address_id=${selectedBilling}&request_from=react_web&frontend_success_url=${typeof window !== "undefined" && window.location.origin
                   ? window.location.origin + "/order/"
                   : ""
-              }&frontend_faild_url=${
-                typeof window !== "undefined" && window.location.origin
+                }&frontend_faild_url=${typeof window !== "undefined" && window.location.origin
                   ? window.location.origin + "/payment-faild"
                   : ""
-              }`;
+                }`;
 
               router.push(url);
               localStorage.removeItem("coupon_set_date");
@@ -838,22 +793,20 @@ function CheakoutPage() {
                         <button
                           onClick={() => setActiveAddress("billing")}
                           type="button"
-                          className={`px-4 py-3 text-md font-medium rounded-md  ${
-                            activeAddress === "billing"
-                              ? "text-white bg-qpurple"
-                              : "text-qpurple"
-                          } `}
+                          className={`px-4 py-3 text-md font-medium rounded-md  ${activeAddress === "billing"
+                            ? "text-white bg-qpurple"
+                            : "text-qpurple"
+                            } `}
                         >
                           {langCntnt && langCntnt.Billing_Address}
                         </button>
                         <button
                           onClick={() => setActiveAddress("shipping")}
                           type="button"
-                          className={`px-4 py-3 text-md font-medium rounded-md ml-1 ${
-                            activeAddress === "shipping"
-                              ? "text-white bg-qpurple"
-                              : "text-qpurple"
-                          } `}
+                          className={`px-4 py-3 text-md font-medium rounded-md ml-1 ${activeAddress === "shipping"
+                            ? "text-white bg-qpurple"
+                            : "text-qpurple"
+                            } `}
                         >
                           {langCntnt && langCntnt.Shipping_Address}
                         </button>
@@ -880,11 +833,10 @@ function CheakoutPage() {
                             <div
                               onClick={() => setBilling(address.id)}
                               key={i}
-                              className={`w-full p-5 border cursor-pointer relative rounded ${
-                                address.id === selectedBilling
-                                  ? "border-qpurple bg-qpurplelow/10"
-                                  : "border-transparent bg-primarygray"
-                              }`}
+                              className={`w-full p-5 border cursor-pointer relative rounded ${address.id === selectedBilling
+                                ? "border-qpurple bg-qpurplelow/10"
+                                : "border-transparent bg-primarygray"
+                                }`}
                             >
                               <div className="flex justify-between items-center">
                                 <p className="title text-[22px] font-semibold">
@@ -1004,11 +956,10 @@ function CheakoutPage() {
                                 )
                               }
                               key={i}
-                              className={`w-full p-5 border relative cursor-pointer rounded ${
-                                address.id === selectedShipping
-                                  ? "border-qpurple bg-qpurplelow/10"
-                                  : "border-transparent bg-primarygray"
-                              }`}
+                              className={`w-full p-5 border relative cursor-pointer rounded ${address.id === selectedShipping
+                                ? "border-qpurple bg-qpurplelow/10"
+                                : "border-transparent bg-primarygray"
+                                }`}
                             >
                               <div className="flex justify-between items-center">
                                 <p className="title text-[22px] font-semibold">
@@ -1210,11 +1161,10 @@ function CheakoutPage() {
                             {langCntnt && langCntnt.Country}*
                           </h1>
                           <div
-                            className={`w-full h-[50px] bg-white border px-5 flex justify-between items-center border-qpurplelow/10 rounded mb-2 ${
-                              !!(errors && Object.hasOwn(errors, "country"))
-                                ? "border-qred"
-                                : "border-qpurplelow/10"
-                            }`}
+                            className={`w-full h-[50px] bg-white border px-5 flex justify-between items-center border-qpurplelow/10 rounded mb-2 ${!!(errors && Object.hasOwn(errors, "country"))
+                              ? "border-qred"
+                              : "border-qpurplelow/10"
+                              }`}
                           >
                             <Selectbox
                               action={getState}
@@ -1263,11 +1213,10 @@ function CheakoutPage() {
                               {langCntnt && langCntnt.State}*
                             </h1>
                             <div
-                              className={`w-full h-[50px] bg-white border px-5 flex justify-between items-center border-qpurplelow/10 rounded mb-2 ${
-                                !!(errors && Object.hasOwn(errors, "state"))
-                                  ? "border-qred"
-                                  : "border-qpurplelow/10"
-                              }`}
+                              className={`w-full h-[50px] bg-white border px-5 flex justify-between items-center border-qpurplelow/10 rounded mb-2 ${!!(errors && Object.hasOwn(errors, "state"))
+                                ? "border-qred"
+                                : "border-qpurplelow/10"
+                                }`}
                             >
                               <Selectbox
                                 action={getcity}
@@ -1315,11 +1264,10 @@ function CheakoutPage() {
                               {langCntnt && langCntnt.City}*
                             </h1>
                             <div
-                              className={`w-full h-[50px] bg-white border px-5 flex justify-between items-center border-qpurplelow/10 rounded mb-2 ${
-                                !!(errors && Object.hasOwn(errors, "city"))
-                                  ? "border-qred"
-                                  : "border-qpurplelow/10"
-                              }`}
+                              className={`w-full h-[50px] bg-white border px-5 flex justify-between items-center border-qpurplelow/10 rounded mb-2 ${!!(errors && Object.hasOwn(errors, "city"))
+                                ? "border-qred"
+                                : "border-qpurplelow/10"
+                                }`}
                             >
                               <Selectbox
                                 action={selectCity}
@@ -1567,7 +1515,7 @@ function CheakoutPage() {
                       >
                         {currency_icon
                           ? currency_icon +
-                            parseFloat(discountCoupon).toFixed(2)
+                          parseFloat(discountCoupon).toFixed(2)
                           : parseFloat(discountCoupon).toFixed(2)}
                       </p>
                     </div>
@@ -1585,145 +1533,145 @@ function CheakoutPage() {
                               <>
                                 {parseInt(rule.condition_from) <=
                                   parseInt(totalPrice) && (
-                                  <>
-                                    {parseInt(rule.condition_to) >=
-                                    parseInt(totalPrice) ? (
-                                      <div className="flex justify-between items-center">
-                                        <div className="flex space-x-2.5 items-center">
-                                          <div className="input-radio">
-                                            <input
-                                              onChange={(e) =>
-                                                selectedRuleHandler(
-                                                  e,
-                                                  rule.shipping_fee
-                                                )
-                                              }
-                                              value={rule.id}
-                                              type="radio"
-                                              name="price"
-                                              className="accent-qpurple"
-                                            />
+                                    <>
+                                      {parseInt(rule.condition_to) >=
+                                        parseInt(totalPrice) ? (
+                                        <div className="flex justify-between items-center">
+                                          <div className="flex space-x-2.5 items-center">
+                                            <div className="input-radio">
+                                              <input
+                                                onChange={(e) =>
+                                                  selectedRuleHandler(
+                                                    e,
+                                                    rule.shipping_fee
+                                                  )
+                                                }
+                                                value={rule.id}
+                                                type="radio"
+                                                name="price"
+                                                className="accent-qpurple"
+                                              />
+                                            </div>
+                                            <span className="text-[15px] text-normal text-qgray">
+                                              {rule.shipping_rule}
+                                            </span>
                                           </div>
-                                          <span className="text-[15px] text-normal text-qgray">
-                                            {rule.shipping_rule}
+                                          <span
+                                            suppressHydrationWarning
+                                            className="text-[15px] text-normal text-qgray"
+                                          >
+                                            {currency_icon
+                                              ? currency_icon + rule.shipping_fee
+                                              : rule.shipping_fee}
                                           </span>
                                         </div>
-                                        <span
-                                          suppressHydrationWarning
-                                          className="text-[15px] text-normal text-qgray"
-                                        >
-                                          {currency_icon
-                                            ? currency_icon + rule.shipping_fee
-                                            : rule.shipping_fee}
-                                        </span>
-                                      </div>
-                                    ) : parseInt(rule.condition_to) === -1 ? (
-                                      <div className="flex justify-between items-center">
-                                        <div className="flex space-x-2.5 items-center">
-                                          <div className="input-radio">
-                                            <input
-                                              onChange={(e) =>
-                                                selectedRuleHandler(
-                                                  e,
-                                                  rule.shipping_fee
-                                                )
-                                              }
-                                              value={rule.id}
-                                              type="radio"
-                                              name="price"
-                                              className="accent-pink-500"
-                                            />
+                                      ) : parseInt(rule.condition_to) === -1 ? (
+                                        <div className="flex justify-between items-center">
+                                          <div className="flex space-x-2.5 items-center">
+                                            <div className="input-radio">
+                                              <input
+                                                onChange={(e) =>
+                                                  selectedRuleHandler(
+                                                    e,
+                                                    rule.shipping_fee
+                                                  )
+                                                }
+                                                value={rule.id}
+                                                type="radio"
+                                                name="price"
+                                                className="accent-pink-500"
+                                              />
+                                            </div>
+                                            <span className="text-[15px] text-normal text-qgray">
+                                              {rule.shipping_rule}
+                                            </span>
                                           </div>
-                                          <span className="text-[15px] text-normal text-qgray">
-                                            {rule.shipping_rule}
+                                          <span
+                                            suppressHydrationWarning
+                                            className="text-[15px] text-normal text-qgray"
+                                          >
+                                            {currency_icon
+                                              ? currency_icon + rule.shipping_fee
+                                              : rule.shipping_fee}
                                           </span>
                                         </div>
-                                        <span
-                                          suppressHydrationWarning
-                                          className="text-[15px] text-normal text-qgray"
-                                        >
-                                          {currency_icon
-                                            ? currency_icon + rule.shipping_fee
-                                            : rule.shipping_fee}
-                                        </span>
-                                      </div>
-                                    ) : (
-                                      ""
-                                    )}
-                                  </>
-                                )}
+                                      ) : (
+                                        ""
+                                      )}
+                                    </>
+                                  )}
                               </>
                             ) : rule.type === "base_on_weight" ? (
                               <>
                                 {parseInt(rule.condition_from) <=
                                   parseInt(totalWeight) && (
-                                  <>
-                                    {parseInt(rule.condition_to) >=
-                                    parseInt(totalWeight) ? (
-                                      <div className="flex justify-between items-center">
-                                        <div className="flex space-x-2.5 items-center">
-                                          <div className="input-radio">
-                                            <input
-                                              onChange={(e) =>
-                                                selectedRuleHandler(
-                                                  e,
-                                                  rule.shipping_fee
-                                                )
-                                              }
-                                              value={rule.id}
-                                              type="radio"
-                                              name="price"
-                                              className="accent-pink-500"
-                                            />
+                                    <>
+                                      {parseInt(rule.condition_to) >=
+                                        parseInt(totalWeight) ? (
+                                        <div className="flex justify-between items-center">
+                                          <div className="flex space-x-2.5 items-center">
+                                            <div className="input-radio">
+                                              <input
+                                                onChange={(e) =>
+                                                  selectedRuleHandler(
+                                                    e,
+                                                    rule.shipping_fee
+                                                  )
+                                                }
+                                                value={rule.id}
+                                                type="radio"
+                                                name="price"
+                                                className="accent-pink-500"
+                                              />
+                                            </div>
+                                            <span className="text-[15px] text-normal text-qgray">
+                                              {rule.shipping_rule}
+                                            </span>
                                           </div>
-                                          <span className="text-[15px] text-normal text-qgray">
-                                            {rule.shipping_rule}
+                                          <span
+                                            suppressHydrationWarning
+                                            className="text-[15px] text-normal text-qgray"
+                                          >
+                                            {currency_icon
+                                              ? currency_icon + rule.shipping_fee
+                                              : rule.shipping_fee}
                                           </span>
                                         </div>
-                                        <span
-                                          suppressHydrationWarning
-                                          className="text-[15px] text-normal text-qgray"
-                                        >
-                                          {currency_icon
-                                            ? currency_icon + rule.shipping_fee
-                                            : rule.shipping_fee}
-                                        </span>
-                                      </div>
-                                    ) : parseInt(rule.condition_to) === -1 ? (
-                                      <div className="flex justify-between items-center">
-                                        <div className="flex space-x-2.5 items-center">
-                                          <div className="input-radio">
-                                            <input
-                                              onChange={(e) =>
-                                                selectedRuleHandler(
-                                                  e,
-                                                  rule.shipping_fee
-                                                )
-                                              }
-                                              value={rule.id}
-                                              type="radio"
-                                              name="price"
-                                              className="accent-pink-500"
-                                            />
+                                      ) : parseInt(rule.condition_to) === -1 ? (
+                                        <div className="flex justify-between items-center">
+                                          <div className="flex space-x-2.5 items-center">
+                                            <div className="input-radio">
+                                              <input
+                                                onChange={(e) =>
+                                                  selectedRuleHandler(
+                                                    e,
+                                                    rule.shipping_fee
+                                                  )
+                                                }
+                                                value={rule.id}
+                                                type="radio"
+                                                name="price"
+                                                className="accent-pink-500"
+                                              />
+                                            </div>
+                                            <span className="text-[15px] text-normal text-qgray">
+                                              {rule.shipping_rule}
+                                            </span>
                                           </div>
-                                          <span className="text-[15px] text-normal text-qgray">
-                                            {rule.shipping_rule}
+                                          <span
+                                            suppressHydrationWarning
+                                            className="text-[15px] text-normal text-qgray"
+                                          >
+                                            {currency_icon
+                                              ? currency_icon + rule.shipping_fee
+                                              : rule.shipping_fee}
                                           </span>
                                         </div>
-                                        <span
-                                          suppressHydrationWarning
-                                          className="text-[15px] text-normal text-qgray"
-                                        >
-                                          {currency_icon
-                                            ? currency_icon + rule.shipping_fee
-                                            : rule.shipping_fee}
-                                        </span>
-                                      </div>
-                                    ) : (
-                                      ""
-                                    )}
-                                  </>
-                                )}
+                                      ) : (
+                                        ""
+                                      )}
+                                    </>
+                                  )}
                               </>
                             ) : rule.type === "base_on_qty" ? (
                               <>
@@ -1813,7 +1761,7 @@ function CheakoutPage() {
                       >
                         {currency_icon
                           ? currency_icon +
-                            (mainTotalPrice - discountCoupon).toFixed(2)
+                          (mainTotalPrice - discountCoupon).toFixed(2)
                           : (mainTotalPrice - discountCoupon).toFixed(2)}
                       </p>
                     </div>
@@ -1826,10 +1774,9 @@ function CheakoutPage() {
                           <div
                             onClick={() => setPaymentMethod("cashOnDelivery")}
                             className={`payment-item relative bg-[#F8F8F8] text-center w-full h-[50px] text-sm text-qpurple rounded flex justify-center items-center px-3 uppercase rounded cursor-pointer
-                              ${
-                                selectPayment === "cashOnDelivery"
-                                  ? "border-2 border-qpurple"
-                                  : "border border-qpurplelow/10"
+                              ${selectPayment === "cashOnDelivery"
+                                ? "border-2 border-qpurple"
+                                : "border border-qpurplelow/10"
                               }
                               `}
                           >
@@ -1859,325 +1806,34 @@ function CheakoutPage() {
                             )}
                           </div>
                         )}
-                        {stripeStatus && (
-                          <div
-                            onClick={() => setPaymentMethod("stripe")}
-                            className={`payment-item text-center bg-[#F8F8F8] relative w-full h-[50px] font-bold text-sm text-white text-qpurple  rounded flex justify-center items-center px-3 uppercase rounded cursor-pointer ${
-                              selectPayment === "stripe"
-                                ? "border-2 border-qpurple"
-                                : "border border-qpurplelow/10"
-                            }`}
-                          >
-                            <div className="w-full flex justify-center">
-                              <span>
-                                <svg
-                                  viewBox="0 0 60 25"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="60"
-                                  height="25"
-                                  className="UserLogo variant-- "
-                                >
-                                  <title>Stripe logo</title>
-                                  <path
-                                    fill="var(--userLogoColor, #0A2540)"
-                                    d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a8.33 8.33 0 0 1-4.56 1.1c-4.01 0-6.83-2.5-6.83-7.48 0-4.19 2.39-7.52 6.3-7.52 3.92 0 5.96 3.28 5.96 7.5 0 .4-.04 1.26-.06 1.48zm-5.92-5.62c-1.03 0-2.17.73-2.17 2.58h4.25c0-1.85-1.07-2.58-2.08-2.58zM40.95 20.3c-1.44 0-2.32-.6-2.9-1.04l-.02 4.63-4.12.87V5.57h3.76l.08 1.02a4.7 4.7 0 0 1 3.23-1.29c2.9 0 5.62 2.6 5.62 7.4 0 5.23-2.7 7.6-5.65 7.6zM40 8.95c-.95 0-1.54.34-1.97.81l.02 6.12c.4.44.98.78 1.95.78 1.52 0 2.54-1.65 2.54-3.87 0-2.15-1.04-3.84-2.54-3.84zM28.24 5.57h4.13v14.44h-4.13V5.57zm0-4.7L32.37 0v3.36l-4.13.88V.88zm-4.32 9.35v9.79H19.8V5.57h3.7l.12 1.22c1-1.77 3.07-1.41 3.62-1.22v3.79c-.52-.17-2.29-.43-3.32.86zm-8.55 4.72c0 2.43 2.6 1.68 3.12 1.46v3.36c-.55.3-1.54.54-2.89.54a4.15 4.15 0 0 1-4.27-4.24l.01-13.17 4.02-.86v3.54h3.14V9.1h-3.13v5.85zm-4.91.7c0 2.97-2.31 4.66-5.73 4.66a11.2 11.2 0 0 1-4.46-.93v-3.93c1.38.75 3.1 1.31 4.46 1.31.92 0 1.53-.24 1.53-1C6.26 13.77 0 14.51 0 9.95 0 7.04 2.28 5.3 5.62 5.3c1.36 0 2.72.2 4.09.75v3.88a9.23 9.23 0 0 0-4.1-1.06c-.86 0-1.44.25-1.44.9 0 1.85 6.29.97 6.29 5.88z"
-                                    fillRule="evenodd"
-                                  ></path>
-                                </svg>
-                              </span>
-                            </div>
-                            {selectPayment === "stripe" && (
-                              <span
-                                data-aos="zoom-in"
-                                className="absolute text-white z-10 w-6 h-6 rounded-full bg-qpurple -right-2.5 -top-2.5"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-6 w-6"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </span>
-                            )}
-                          </div>
-                        )}
-                        {rezorPayStatue && (
-                          <div
-                            onClick={() => setPaymentMethod("razorpay")}
-                            className={`payment-item text-center bg-[#F8F8F8] relative w-full h-[50px] font-bold text-sm text-white text-qpurple  rounded flex justify-center items-center px-3 uppercase rounded cursor-pointer ${
-                              selectPayment === "razorpay"
-                                ? "border-2 border-qpurple"
-                                : "border border-qpurplelow/10"
-                            }`}
-                          >
-                            <div className="w-full flex justify-center">
-                              <span>
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="#072654"
-                                  width="100"
-                                  height="50"
-                                  viewBox=".8 .48 1894.74 400.27"
-                                >
-                                  <path
-                                    d="m122.63 105.7-15.75 57.97 90.15-58.3-58.96 219.98 59.88.05 87.1-324.92"
-                                    fill="#3395ff"
-                                  />
-                                  <path d="m25.6 232.92-24.8 92.48h122.73l50.22-188.13zm426.32-81.42c-3 11.15-8.78 19.34-17.4 24.57-8.6 5.22-20.67 7.84-36.25 7.84h-49.5l17.38-64.8h49.5c15.56 0 26.25 2.6 32.05 7.9s7.2 13.4 4.22 24.6m51.25-1.4c6.3-23.4 3.7-41.4-7.82-54-11.5-12.5-31.68-18.8-60.48-18.8h-110.47l-66.5 248.1h53.67l26.8-100h35.2c7.9 0 14.12 1.3 18.66 3.8 4.55 2.6 7.22 7.1 8.04 13.6l9.58 82.6h57.5l-9.32-77c-1.9-17.2-9.77-27.3-23.6-30.3 17.63-5.1 32.4-13.6 44.3-25.4a92.6 92.6 0 0 0 24.44-42.5m130.46 86.4c-4.5 16.8-11.4 29.5-20.73 38.4-9.34 8.9-20.5 13.3-33.52 13.3-13.26 0-22.25-4.3-27-13-4.76-8.7-4.92-21.3-.5-37.8s11.47-29.4 21.17-38.7 21.04-13.95 34.06-13.95c13 0 21.9 4.5 26.4 13.43 4.6 8.97 4.7 21.8.2 38.5zm23.52-87.8-6.72 25.1c-2.9-9-8.53-16.2-16.85-21.6-8.34-5.3-18.66-8-30.97-8-15.1 0-29.6 3.9-43.5 11.7s-26.1 18.8-36.5 33-18 30.3-22.9 48.4c-4.8 18.2-5.8 34.1-2.9 47.9 3 13.9 9.3 24.5 19 31.9 9.8 7.5 22.3 11.2 37.6 11.2a82.4 82.4 0 0 0 35.2-7.7 82.11 82.11 0 0 0 28.4-21.2l-7 26.16h51.9l47.39-176.77h-52zm238.65 0h-150.93l-10.55 39.4h87.82l-116.1 100.3-9.92 37h155.8l10.55-39.4h-94.1l117.88-101.8m142.4 52c-4.67 17.4-11.6 30.48-20.75 39-9.15 8.6-20.23 12.9-33.24 12.9-27.2 0-36.14-17.3-26.86-51.9 4.6-17.2 11.56-30.13 20.86-38.84 9.3-8.74 20.57-13.1 33.82-13.1 13 0 21.78 4.33 26.3 13.05 4.52 8.7 4.48 21.67-.13 38.87m30.38-80.83c-11.95-7.44-27.2-11.16-45.8-11.16-18.83 0-36.26 3.7-52.3 11.1a113.09 113.09 0 0 0 -41 32.06c-11.3 13.9-19.43 30.2-24.42 48.8-4.9 18.53-5.5 34.8-1.7 48.73 3.8 13.9 11.8 24.6 23.8 32 12.1 7.46 27.5 11.17 46.4 11.17 18.6 0 35.9-3.74 51.8-11.18 15.9-7.48 29.5-18.1 40.8-32.1 11.3-13.94 19.4-30.2 24.4-48.8s5.6-34.84 1.8-48.8c-3.8-13.9-11.7-24.6-23.6-32.05m185.1 40.8 13.3-48.1c-4.5-2.3-10.4-3.5-17.8-3.5-11.9 0-23.3 2.94-34.3 8.9-9.46 5.06-17.5 12.2-24.3 21.14l6.9-25.9-15.07.06h-37l-47.7 176.7h52.63l24.75-92.37c3.6-13.43 10.08-24 19.43-31.5 9.3-7.53 20.9-11.3 34.9-11.3 8.6 0 16.6 1.97 24.2 5.9m146.5 41.1c-4.5 16.5-11.3 29.1-20.6 37.8-9.3 8.74-20.5 13.1-33.5 13.1s-21.9-4.4-26.6-13.2c-4.8-8.85-4.9-21.6-.4-38.36 4.5-16.75 11.4-29.6 20.9-38.5 9.5-8.97 20.7-13.45 33.7-13.45 12.8 0 21.4 4.6 26 13.9s4.7 22.2.28 38.7m36.8-81.4c-9.75-7.8-22.2-11.7-37.3-11.7-13.23 0-25.84 3-37.8 9.06-11.95 6.05-21.65 14.3-29.1 24.74l.18-1.2 8.83-28.1h-51.4l-13.1 48.9-.4 1.7-54 201.44h52.7l27.2-101.4c2.7 9.02 8.2 16.1 16.6 21.22 8.4 5.1 18.77 7.63 31.1 7.63 15.3 0 29.9-3.7 43.75-11.1 13.9-7.42 25.9-18.1 36.1-31.9s17.77-29.8 22.6-47.9c4.9-18.13 5.9-34.3 3.1-48.45-2.85-14.17-9.16-25.14-18.9-32.9m174.65 80.65c-4.5 16.7-11.4 29.5-20.7 38.3-9.3 8.86-20.5 13.27-33.5 13.27-13.3 0-22.3-4.3-27-13-4.8-8.7-4.9-21.3-.5-37.8s11.42-29.4 21.12-38.7 21.05-13.94 34.07-13.94c13 0 21.8 4.5 26.4 13.4 4.6 8.93 4.63 21.76.15 38.5zm23.5-87.85-6.73 25.1c-2.9-9.05-8.5-16.25-16.8-21.6-8.4-5.34-18.7-8-31-8-15.1 0-29.68 3.9-43.6 11.7-13.9 7.8-26.1 18.74-36.5 32.9s-18 30.3-22.9 48.4c-4.85 18.17-5.8 34.1-2.9 47.96 2.93 13.8 9.24 24.46 19 31.9 9.74 7.4 22.3 11.14 37.6 11.14 12.3 0 24.05-2.56 35.2-7.7a82.3 82.3 0 0 0 28.33-21.23l-7 26.18h51.9l47.38-176.7h-51.9zm269.87.06.03-.05h-31.9c-1.02 0-1.92.05-2.85.07h-16.55l-8.5 11.8-2.1 2.8-.9 1.4-67.25 93.68-13.9-109.7h-55.08l27.9 166.7-61.6 85.3h54.9l14.9-21.13c.42-.62.8-1.14 1.3-1.8l17.4-24.7.5-.7 77.93-110.5 65.7-93 .1-.06h-.03z" />
-                                </svg>
-                              </span>
-                            </div>
-                            {selectPayment === "razorpay" && (
-                              <span
-                                data-aos="zoom-in"
-                                className="absolute text-white z-10 w-6 h-6 rounded-full bg-qpurple -right-2.5 -top-2.5"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-6 w-6"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </span>
-                            )}
-                          </div>
-                        )}
-                        {flutterWaveStatus && (
-                          <div
-                            onClick={() => setPaymentMethod("flutterWave")}
-                            className={`payment-item text-center bg-[#F8F8F8] relative w-full h-[50px] font-bold text-sm text-white text-qpurple  rounded flex justify-center items-center px-3 uppercase rounded cursor-pointer ${
-                              selectPayment === "flutterWave"
-                                ? "border-2 border-qpurple"
-                                : "border border-qpurplelow/10"
-                            }`}
-                          >
-                            <div className="w-full flex justify-center">
-                              <span>
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  height="60"
-                                  viewBox="-135.4 209.8 604.3 125.4"
-                                  width="120"
-                                >
-                                  <path
-                                    d="m67.2 244.4h.2c1.2 0 1.9.9 1.9 2.1v53.9c0 .9-.7 1.9-1.9 1.9-.9 0-1.9-.7-1.9-1.9v-54.1c0-1 .7-1.9 1.7-1.9zm-51.3 2.8h35.3c1.2 0 1.9 1.2 1.9 2.1s-.7 1.9-1.9 1.9h-33.4v22.5h30.2c.9 0 1.9.7 1.9 1.9 0 .9-.7 1.9-1.9 1.9h-29.9v23.2c-.2 1.2-1.2 2.1-2.3 2.1-1.2 0-2.1-.9-2.1-2.1v-51.3h.2a2 2 0 0 1 2-2.2zm102.5 16.7c0-1.2-.9-1.9-1.9-1.9-1.2 0-1.9.9-1.9 1.9v22.5c0 7.7-6.3 13.7-14 13.5-8.2 0-12.9-5.3-12.9-13.7v-22.3c0-1.2-.9-1.9-1.9-1.9-.9 0-1.9.9-1.9 1.9v23c0 9.5 6.1 16.5 16.1 16.5 6.1.2 11.9-3 14.7-8.4v5.8c0 1.2.9 1.9 1.9 1.9 1.2 0 1.9-.9 1.9-1.9h-.2v-36.9zm35.5.3c0 .9-.9 1.6-1.9 1.6h-12.9v25.8c0 5.8 3.3 7.9 8.2 7.9 1.6 0 3.3-.2 4.7-.7.9 0 1.6.7 1.6 1.6 0 .7-.5 1.4-1.2 1.6-1.9.7-4 .9-5.8.9-6.1 0-11.2-3.5-11.2-10.9v-26.2h-4.4c-.9 0-1.9-.9-1.9-1.9 0-.9.9-1.6 1.9-1.6h4.4v-11.1c0-.9.7-1.9 1.6-1.9h.2c.9 0 1.9.9 1.9 1.9v11.1h12.9c1 0 1.9.9 1.9 1.9zm30 1.6c.9 0 1.9-.7 1.9-1.6s-.9-1.9-1.9-1.9h-12.9v-11.1c0-.9-.9-1.9-1.9-1.9h-.2c-.9 0-1.6.9-1.6 1.9v11.1h-4.4c-.9 0-1.9.7-1.9 1.6s.9 1.9 1.9 1.9h4.4v26.2c0 7.4 5.1 10.9 11.2 10.9 1.9 0 4-.2 5.8-.9.7-.2 1.2-.9 1.2-1.6 0-.9-.7-1.6-1.6-1.6-1.4.5-3 .7-4.7.7-4.9 0-8.2-2.1-8.2-7.9v-25.8zm8.9 16.5c0-11.8 8.2-21.1 19.2-21.1 11.5 0 18.7 9.3 18.7 21.1 0 .9-.9 1.9-1.9 1.9h-31.8c.7 10 8 15.8 15.9 15.8 4.9 0 9.8-2.1 13.1-5.6.2-.2.7-.5 1.2-.5.9 0 1.9.9 1.9 1.9 0 .5-.2.9-.7 1.4-4 4.4-9.8 6.7-15.7 6.5-10.8 0-19.9-8.4-19.9-21.1zm53.1-8.4c2.6-6.7 8.9-11.6 16.1-12.1 1.2 0 2.1.9 2.1 2.3 0 .9-.7 2.1-1.9 2.1h-.2c-8.7.9-16.1 7.2-16.1 20.2v14.9c-.2 1.2-.9 1.9-2.1 1.9-.9 0-1.9-.9-1.9-1.9v-37.2c.2-1.2.9-1.9 2.1-1.9.9 0 1.9.9 1.9 1.9zm79.9-14.2c-2.8 0-5.1 1.9-5.8 4.6l-6.8 21.6-6.8-21.6c-.7-2.8-3.3-4.9-6.3-4.9h-.7c-3 0-5.6 1.9-6.3 4.9l-6.8 21.4-6.5-21.6c-.7-2.6-3-4.6-5.8-4.6h-.2c-3 0-5.4 2.6-5.4 5.6 0 .9.2 1.9.5 2.8l10.5 30c.7 3 3.3 5.1 6.5 5.3h.5c3 0 5.6-2.1 6.5-5.1l6.8-21.4 6.8 21.4c.7 3 3.5 5.1 6.5 5.1h.5c3.3 0 6.1-2.1 6.8-5.3l10.5-30.2c.2-.7.5-1.6.5-2.3v-.2c-.1-3.1-2.4-5.5-5.5-5.5zm16.4 2.1c4.4-1.4 8.9-2.3 13.6-2.1 6.5 0 11.2 1.9 14.7 4.9 3.3 3.7 4.9 8.6 4.7 13.5v19c0 3.3-2.6 5.8-5.8 5.8-3 0-5.6-2.1-5.8-5.1-3.3 3.5-8 5.6-12.9 5.3-7.7 0-14.5-4.6-14.5-13 0-9.3 7-13.7 17.1-13.7 3.5 0 7 .5 10.3 1.6v-.7c0-5.1-3-7.7-9.1-7.7-2.8 0-5.6.2-8.4 1.2-.5.2-1.2.2-1.6.2-2.8.2-5.1-1.9-5.1-4.6-.2-2 .9-3.9 2.8-4.6zm69 1.9c.7-2.6 3-4.2 5.6-4.2 3.3 0 5.8 2.6 5.8 5.6v.2c0 .9-.2 1.9-.7 2.8l-12.6 30c-1.2 3-4 4.9-7 5.1h-.7c-3.3-.2-5.8-2.3-6.8-5.3l-13.1-30c-.5-.9-.7-1.9-.7-2.8.2-3.3 2.8-5.6 5.8-5.6 2.8 0 5.1 1.9 5.8 4.4l9.1 24.4zm16.2 19.5c.5 11.6 10.5 20.7 22.2 20 5.4 0 10.5-1.6 14.7-5.1 1.2-.9 1.6-2.1 1.6-3.5v-.2c0-2.6-2.1-4.6-4.7-4.6-.9 0-2.1.2-2.8.9-2.6 1.9-5.6 3-8.7 2.8-5.1.2-9.6-3.3-10.3-8.4h24.1c3-.2 5.4-2.8 5.1-5.8v-.9c0-10.5-9.1-19.3-20.3-19-12.4 0-21.1 10-21.1 22.1v1.7z"
-                                    fill="#10112b"
-                                  />
-                                  <path
-                                    d="m196.7 280.4c.7-8.8 7-15.6 15-15.6 9.1 0 14 7.4 14.5 15.6zm167 7c0 4.6-4 7.4-9.6 7.2-3.7 0-6.5-1.9-6.5-5.1v-.2c0-3.5 3.3-5.8 8.4-5.8 2.6 0 5.4.7 7.7 1.6zm84.7-18.4c-4.9 0-8.2 3.5-9.1 9.1h18c-.7-5.4-4-9.1-8.9-9.1z"
-                                    fill="#fff"
-                                  />
-                                  <path
-                                    d="m-46.7 217.7c52.6-7.9 18.9 36.9 2.6 49.5 11.2 8.6 22.7 20.7 27.6 34.4 9.1 25.1-13.3 28.8-30.2 22.5-18.5-6.5-34.8-20.4-45.6-36.7-3 0-6.3-.5-9.4-1.4 6.1 17.2 8.7 34.8 7 49.2 0-29-13.8-57.8-33.7-81.8-7-8.4.2-14.6 6.5-6.5 4.3 5.9 8.2 12 11.7 18.3 6.9-23.6 40.5-44.2 63.5-47.5zm-7.5 42.7c10.3-6.3 41.6-39.9 12.4-36.9-16.8 1.9-37.2 17.4-45.6 27.4 11.7-1.4 23.6 3.7 33.2 9.5zm-29 26.1c9.4 10.5 22.2 20.7 36 24.4 8 2.1 16.8 1.2 13.6-10.2-3.3-10.5-11.7-19.7-19.9-26.7-2.3 1.6-4.9 3.3-7.5 4.4-7 3.9-14.5 6.7-22.2 8.1z"
-                                    fill="#eba12a"
-                                  />
-                                  <path
-                                    d="m-87.7 258.3c8-.7 16.6 3.5 23.2 7.7-6.3 3-13.3 4.9-20.6 5.3-10.7.1-12.9-12-2.6-13z"
-                                    fill="#fff"
-                                  />
-                                </svg>
-                              </span>
-                            </div>
-                            {selectPayment === "flutterWave" && (
-                              <span
-                                data-aos="zoom-in"
-                                className="absolute text-white z-10 w-6 h-6 rounded-full bg-qpurple -right-2.5 -top-2.5"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-6 w-6"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </span>
-                            )}
-                          </div>
-                        )}
-                        {mollieStatus && (
-                          <div
-                            onClick={() => setPaymentMethod("mollie")}
-                            className={`payment-item text-center bg-[#F8F8F8] relative w-full h-[50px] font-bold text-sm text-white text-qpurple  rounded flex justify-center items-center px-3 uppercase rounded cursor-pointer ${
-                              selectPayment === "mollie"
-                                ? "border-2 border-qpurple"
-                                : "border border-qpurplelow/10"
-                            }`}
-                          >
-                            <div className="w-full flex justify-center">
-                              <span>
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  enableBackground="new 0 0 2500 738.6"
-                                  viewBox="0 0 2500 738.6"
-                                  height="30"
-                                  width="70"
-                                >
-                                  <path d="m1057.4 241.2c-137.3 0-248.7 111.7-248.7 248.7s111.7 248.7 248.7 248.7 248.7-111.7 248.7-248.7-111.4-248.7-248.7-248.7zm0 379.7c-72.1 0-130.8-58.7-130.8-130.8s58.7-130.8 130.8-130.8 130.8 58.7 130.8 130.8-58.7 130.8-130.8 130.8z" />
-                                  <path d="m1884.7 155.1c42.8 0 77.6-34.7 77.6-77.6s-34.8-77.5-77.6-77.5-77.6 34.7-77.6 77.6 34.8 77.5 77.6 77.5z" />
-                                  <path d="m549.6 241.4c-6.5-.5-12.7-.8-19.1-.8-60 0-116.9 24.6-157.7 68-40.8-43.2-97.5-68-156.9-68-119 .1-215.9 96.7-215.9 215.7v272.2h116.3v-268.9c0-49.4 40.6-94.9 88.4-99.8 3.4-.3 6.7-.5 9.8-.5 53.8 0 97.7 43.9 98 97.7v271.4h118.9v-269.3c0-49.1 40.3-94.6 88.4-99.5 3.4-.3 6.7-.5 9.8-.5 53.8 0 98 43.7 98.2 97.2v272.2h118.9v-268.9c0-54.5-20.2-107.1-56.6-147.6-36.3-40.8-86.2-65.9-140.5-70.6z" />
-                                  <path d="m1489.1 11.6h-118.9v717.4h118.9zm227.6 0h-118.9v717.4h118.9zm227.5 241.5h-118.9v475.7h118.9z" />
-                                  <path d="m2500 478.8c0-63.1-24.6-122.5-69-167.8-44.7-45.2-103.7-70.3-166.5-70.3h-3.1c-65.1.8-126.7 26.6-172.7 72.9s-71.9 107.5-72.6 172.9c-.8 66.7 24.8 129.8 72.1 177.6s109.9 74.2 176.6 74.2h.3c87.4 0 169.3-46.8 214.1-122l5.7-9.6-98.2-48.3-4.9 8c-24.8 40.6-67.4 64.6-114.7 64.6-60.5 0-112.7-40.3-128.8-97.7h361.7zm-240.2-130.1c54.3 0 102.9 35.7 120 86.3h-239.7c16.8-50.6 65.4-86.3 119.7-86.3z" />
-                                </svg>
-                              </span>
-                            </div>
-                            {selectPayment === "mollie" && (
-                              <span
-                                data-aos="zoom-in"
-                                className="absolute text-white z-10 w-6 h-6 rounded-full bg-qpurple -right-2.5 -top-2.5"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-6 w-6"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </span>
-                            )}
-                          </div>
-                        )}
-                        {instaMojoStatus && (
-                          <div
-                            onClick={() => setPaymentMethod("instamojo")}
-                            className={`payment-item text-center bg-[#F8F8F8] relative w-full h-[50px] font-bold text-sm text-white text-qpurple  rounded flex justify-center items-center px-3 uppercase rounded cursor-pointer ${
-                              selectPayment === "instamojo"
-                                ? "border-2 border-qpurple"
-                                : "border border-qpurplelow/10"
-                            }`}
-                          >
-                            <div className="w-full flex justify-center">
-                              <span>
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  version="1.0"
-                                  height="50"
-                                  width="100"
-                                  viewBox="0 0 400.000000 92.000000"
-                                  preserveAspectRatio="xMidYMid meet"
-                                >
-                                  <g
-                                    transform="translate(0.000000,92.000000) scale(0.100000,-0.100000)"
-                                    fill="#000000"
-                                    stroke="none"
-                                  >
-                                    <path d="M54 904 c-36 -19 -44 -31 -44 -72 0 -40 38 -82 74 -82 14 0 37 11 52 23 69 59 -2 172 -82 131z" />
-                                    <path d="M1180 506 c0 -205 1 -214 23 -247 34 -52 79 -71 159 -67 88 5 94 12 74 80 l-15 53 -43 0 -43 0 -3 103 -3 102 46 0 45 0 0 60 0 60 -45 0 c-45 0 -45 0 -45 35 l0 35 -75 0 -75 0 0 -214z" />
-                                    <path d="M356 630 c-106 -53 -125 -99 -126 -292 l0 -148 75 0 75 0 0 135 c0 122 2 137 20 155 11 11 32 20 48 20 60 0 72 -30 72 -184 l0 -126 76 0 76 0 -4 153 c-3 151 -4 155 -33 202 -58 93 -185 132 -279 85z" />
-                                    <path d="M838 635 c-60 -22 -86 -44 -103 -89 -14 -35 -14 -47 -3 -81 17 -52 61 -80 147 -95 79 -13 116 -33 91 -50 -22 -14 -100 -12 -155 5 -27 8 -50 13 -51 12 -14 -18 -44 -92 -41 -102 10 -24 130 -48 215 -43 102 6 162 37 186 98 21 53 8 110 -32 138 -34 24 -87 42 -122 42 -40 0 -90 20 -90 36 0 27 44 37 107 26 32 -6 65 -13 73 -16 11 -4 21 9 38 46 12 28 20 53 18 55 -2 2 -28 11 -57 19 -67 17 -172 17 -221 -1z" />
-                                    <path d="M1621 637 c-115 -44 -181 -173 -147 -291 31 -107 112 -163 221 -154 31 3 62 12 73 21 24 22 32 21 32 -3 0 -18 7 -20 71 -20 l70 0 -3 148 c-3 145 -4 150 -33 198 -43 69 -109 107 -189 111 -33 1 -76 -3 -95 -10z m138 -134 c23 -19 37 -77 28 -115 -25 -96 -153 -89 -173 10 -8 40 0 72 26 100 26 27 88 30 119 5z" />
-                                    <path d="M2135 636 c-46 -20 -94 -64 -115 -107 -17 -33 -20 -59 -20 -189 l0 -150 73 0 72 0 -3 92 c-4 116 4 174 29 199 28 28 73 25 98 -7 19 -24 21 -40 21 -155 l0 -129 75 0 75 0 0 133 c0 120 2 135 20 155 26 28 73 29 100 2 18 -18 20 -33 20 -155 l0 -135 75 0 75 0 0 145 c0 100 -4 156 -13 178 -37 88 -124 142 -217 135 -31 -2 -75 -14 -97 -25 l-41 -21 -48 24 c-54 27 -130 32 -179 10z" />
-                                    <path d="M2932 637 c-82 -26 -152 -125 -152 -215 0 -98 72 -196 163 -221 91 -26 210 1 263 61 82 89 78 245 -8 325 -60 56 -178 78 -266 50z m141 -128 c15 -11 32 -37 38 -59 10 -32 9 -44 -7 -76 -60 -123 -208 -41 -164 90 20 61 85 83 133 45z" />
-                                    <path d="M3310 407 c0 -251 -2 -262 -42 -283 -16 -9 -15 -14 9 -67 24 -54 29 -58 52 -52 43 11 85 39 108 75 22 32 23 39 23 301 l0 269 -75 0 -75 0 0 -243z" />
-                                    <path d="M3650 629 c-92 -42 -135 -108 -134 -209 1 -138 96 -229 239 -230 218 0 326 240 175 390 -71 72 -186 92 -280 49z m144 -110 c27 -13 56 -64 56 -99 0 -35 -29 -86 -56 -99 -39 -17 -61 -13 -96 18 -29 26 -33 35 -33 81 0 46 4 55 33 81 35 31 57 35 96 18z" />
-                                    <path d="M0 400 l0 -210 26 -10 c32 -13 86 -13 118 0 l26 10 0 210 0 210 -27 -6 c-15 -4 -41 -7 -58 -7 -17 0 -43 3 -58 7 l-27 6 0 -210z" />
-                                  </g>
-                                </svg>
-                              </span>
-                            </div>
-                            {selectPayment === "instamojo" && (
-                              <span
-                                data-aos="zoom-in"
-                                className="absolute text-white z-10 w-6 h-6 rounded-full bg-qpurple -right-2.5 -top-2.5"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-6 w-6"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </span>
-                            )}
-                          </div>
-                        )}
-                        {payStackStatus && (
-                          <div
-                            onClick={() => setPaymentMethod("paystack")}
-                            className={`payment-item text-center bg-[#F8F8F8] relative w-full h-[50px] font-bold text-sm text-white text-qpurple  rounded flex justify-center items-center px-3 uppercase rounded cursor-pointer ${
-                              selectPayment === "paystack"
-                                ? "border-2 border-qpurple"
-                                : "border border-qpurplelow/10"
-                            }`}
-                          >
-                            <div className="w-full flex justify-center">
-                              <span>
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  height="50"
-                                  width="100"
-                                  viewBox="-131.2 222 600.2 106.9"
-                                >
-                                  <path
-                                    d="m-45.8 232.2h-80.4c-2.7 0-5 2.3-5 5.1v9.1c0 2.8 2.3 5.1 5 5.1h80.4c2.8 0 5-2.3 5.1-5.1v-9c0-2.9-2.3-5.2-5.1-5.2zm0 50.5h-80.4c-1.3 0-2.6.5-3.5 1.5-1 1-1.5 2.2-1.5 3.6v9.1c0 2.8 2.3 5.1 5 5.1h80.4c2.8 0 5-2.2 5.1-5.1v-9.1c-.1-2.9-2.3-5.1-5.1-5.1zm-35.1 25.2h-45.3c-1.3 0-2.6.5-3.5 1.5s-1.5 2.2-1.5 3.6v9.1c0 2.8 2.3 5.1 5 5.1h45.2c2.8 0 5-2.3 5-5v-9.1c.1-3-2.1-5.3-4.9-5.2zm40.2-50.5h-85.5c-1.3 0-2.6.5-3.5 1.5s-1.5 2.2-1.5 3.6v9.1c0 2.8 2.3 5.1 5 5.1h85.4c2.8 0 5-2.3 5-5.1v-9.1c.1-2.8-2.2-5-4.9-5.1zm0 0"
-                                    fill="#00c3f7"
-                                  />
-                                  <path
-                                    d="m52.8 252.6c-2.5-2.6-5.4-4.6-8.7-6s-6.8-2.1-10.4-2.1c-3.5-.1-6.9.7-10.1 2.2-2.1 1-4 2.4-5.6 4.1v-1.6c0-.8-.3-1.6-.8-2.2s-1.3-1-2.2-1h-11.1c-.8 0-1.6.3-2.1 1-.6.6-.9 1.4-.8 2.2v74.8c0 .8.3 1.6.8 2.2.6.6 1.3.9 2.1.9h11.4c.8 0 1.5-.3 2.1-.9.6-.5 1-1.3.9-2.2v-25.6c1.6 1.8 3.7 3.1 6 3.9 3 1.1 6.1 1.7 9.3 1.7 3.6 0 7.2-.7 10.5-2.1s6.3-3.4 8.8-6c2.6-2.7 4.6-5.9 6-9.4 1.6-3.9 2.3-8.1 2.2-12.3.1-4.2-.7-8.4-2.2-12.4-1.5-3.3-3.5-6.5-6.1-9.2zm-10.2 27.1c-.6 1.6-1.5 3-2.7 4.3-2.3 2.5-5.6 3.9-9 3.9-1.7 0-3.4-.3-5-1.1-1.5-.7-2.9-1.6-4.1-2.8s-2.1-2.7-2.7-4.3c-1.3-3.4-1.3-7.1 0-10.5.6-1.6 1.6-3 2.7-4.2 1.2-1.2 2.6-2.2 4.1-2.9 1.6-.7 3.3-1.1 5-1.1 1.8 0 3.4.3 5.1 1.1 1.5.7 2.9 1.6 4 2.8 1.2 1.2 2 2.6 2.7 4.2 1.2 3.5 1.1 7.2-.1 10.6zm79.6-33.6h-11.3c-.8 0-1.6.3-2.1.9-.6.6-.9 1.4-.9 2.3v1.4c-1.4-1.7-3.2-3-5.1-3.9-3.1-1.5-6.5-2.2-9.9-2.2-7.3 0-14.2 2.9-19.4 8-2.7 2.7-4.8 5.9-6.2 9.4-1.6 3.9-2.4 8.1-2.3 12.4-.1 4.2.7 8.4 2.3 12.4 1.5 3.5 3.5 6.7 6.2 9.4 5.1 5.2 12.1 8.1 19.3 8.1 3.4.1 6.8-.7 9.9-2.2 1.9-1 3.8-2.3 5.2-3.9v1.5c0 .8.3 1.6.9 2.2.6.5 1.3.9 2.1.9h11.3c.8 0 1.6-.3 2.1-.9.6-.6.9-1.4.9-2.2v-50.3c0-.8-.3-1.6-.8-2.2-.6-.7-1.4-1.1-2.2-1.1zm-15.3 33.6c-.6 1.6-1.5 3-2.7 4.3-1.2 1.2-2.5 2.2-4 2.9-3.2 1.5-6.9 1.5-10.1 0-1.5-.7-2.9-1.7-4.1-2.9s-2.1-2.7-2.7-4.3c-1.2-3.4-1.2-7.1 0-10.5.6-1.6 1.5-2.9 2.7-4.2 1.2-1.2 2.5-2.2 4.1-2.9 3.2-1.5 6.9-1.5 10 0 1.5.7 2.9 1.6 4 2.8s2 2.6 2.7 4.2c1.4 3.5 1.4 7.2.1 10.6zm127.9-6.8c-1.6-1.4-3.5-2.6-5.5-3.4-2.1-.9-4.4-1.5-6.6-2l-8.6-1.7c-2.2-.4-3.8-1-4.6-1.7-.7-.5-1.2-1.3-1.2-2.2s.5-1.7 1.6-2.4c1.5-.8 3.1-1.2 4.8-1.1 2.2 0 4.4.5 6.4 1.3 2 .9 3.9 1.8 5.7 3 2.5 1.6 4.7 1.3 6.2-.5l4.1-4.7c.8-.8 1.2-1.8 1.3-2.9-.1-1.2-.7-2.2-1.6-3-1.7-1.5-4.5-3.1-8.2-4.7s-8.4-2.4-13.9-2.4c-3.4-.1-6.7.4-9.9 1.4-2.7.9-5.3 2.2-7.6 3.9-2.1 1.6-3.7 3.6-4.9 6-1.1 2.3-1.7 4.8-1.7 7.3 0 4.7 1.4 8.5 4.2 11.3s6.5 4.7 11.1 5.6l9 2c1.9.3 3.9.9 5.7 1.8 1 .4 1.6 1.4 1.6 2.5 0 1-.5 1.9-1.6 2.7s-2.9 1.3-5.3 1.3-4.9-.5-7.1-1.6c-2.1-1-4-2.3-5.8-3.8-.8-.6-1.6-1.1-2.6-1.5-1-.3-2.3 0-3.6 1.1l-4.9 3.7c-1.4 1-2.1 2.7-1.7 4.3.3 1.7 1.6 3.3 4.1 5.2 6.2 4.2 13.6 6.4 21.1 6.2 3.5 0 7-.4 10.3-1.4 2.9-.9 5.6-2.2 8-4 2.2-1.6 4-3.7 5.2-6.2 1.2-2.4 1.8-5 1.8-7.7.1-2.4-.4-4.8-1.4-7-1-1.6-2.3-3.3-3.9-4.7zm49.4 13.7c-.5-.9-1.4-1.5-2.5-1.7-1 0-2.1.3-2.9.9-1.4.9-3 1.4-4.6 1.5-.5 0-1.1-.1-1.6-.2-.6-.1-1.1-.4-1.5-.8-.5-.5-.9-1.1-1.2-1.7-.4-1-.6-2-.5-3v-20.5h14.6c.9 0 1.7-.4 2.3-1s1-1.3 1-2.2v-8.7c0-.9-.3-1.7-1-2.2-.6-.6-1.4-.9-2.2-.9h-14.7v-14c0-.8-.3-1.7-.9-2.2s-1.3-.8-2.1-.9h-11.4c-.8 0-1.6.3-2.2.9s-1 1.4-1 2.2v14h-6.5c-.8 0-1.6.3-2.2 1-.5.6-.8 1.4-.8 2.2v8.7c0 .8.3 1.6.8 2.2.5.7 1.3 1 2.2 1h6.5v24.4c-.1 2.9.5 5.8 1.7 8.4 1.1 2.2 2.5 4.1 4.4 5.7 1.8 1.5 3.9 2.6 6.2 3.2 2.3.7 4.7 1.1 7.1 1.1 3.1 0 6.3-.5 9.3-1.5 2.8-.9 5.3-2.5 7.3-4.6 1.3-1.3 1.4-3.4.4-4.9zm61.8-40.5h-11.3c-.8 0-1.5.3-2.1.9s-.9 1.4-.9 2.3v1.4c-1.4-1.7-3.1-3-5.1-3.9-3.1-1.5-6.5-2.2-9.9-2.2-7.3 0-14.2 2.9-19.4 8-2.7 2.7-4.8 5.9-6.2 9.4-1.6 3.9-2.4 8.1-2.3 12.3-.1 4.2.7 8.4 2.3 12.4 1.4 3.5 3.6 6.7 6.2 9.4 5.1 5.2 12 8.1 19.3 8.1 3.4.1 6.8-.7 9.9-2.1 2-1 3.8-2.3 5.2-3.9v1.5c0 .8.3 1.6.9 2.1.6.6 1.3.9 2.1.9h11.3c1.7 0 3-1.3 3-3v-50.3c0-.8-.3-1.6-.8-2.2-.5-.7-1.3-1.1-2.2-1.1zm-15.2 33.6c-.6 1.6-1.5 3-2.7 4.3-1.2 1.2-2.5 2.2-4 2.9-1.6.7-3.3 1.1-5.1 1.1s-3.4-.4-5-1.1c-1.5-.7-2.9-1.7-4.1-2.9s-2.1-2.7-2.6-4.3c-1.2-3.4-1.2-7.1 0-10.5.6-1.6 1.5-3 2.6-4.2 1.2-1.2 2.6-2.2 4.1-2.9 1.6-.7 3.3-1.1 5-1.1s3.4.3 5.1 1.1c1.5.7 2.8 1.6 4 2.8s2.1 2.6 2.7 4.2c1.3 3.4 1.3 7.2 0 10.6zm77.2 6.1-6.5-5c-1.2-1-2.4-1.3-3.4-.9-.9.4-1.7 1-2.4 1.7-1.4 1.7-3.1 3.2-4.9 4.5-2 1.1-4.1 1.7-6.3 1.5-2.6 0-5-.7-7.1-2.2s-3.7-3.5-4.5-6c-.6-1.7-.9-3.4-.9-5.1 0-1.8.3-3.5.9-5.3.6-1.6 1.4-3 2.6-4.2s2.5-2.2 4-2.8c1.6-.7 3.3-1.1 5.1-1.1 2.2-.1 4.4.5 6.3 1.6 1.9 1.2 3.5 2.7 4.9 4.5.6.7 1.4 1.3 2.3 1.7 1 .4 2.2.1 3.4-.9l6.5-4.9c.8-.5 1.4-1.3 1.7-2.2.4-1 .3-2.1-.3-3-2.5-3.9-5.9-7.1-10-9.4-4.3-2.4-9.4-3.7-15.1-3.7-4 0-8 .8-11.8 2.3-3.6 1.5-6.8 3.6-9.5 6.3s-4.9 5.9-6.4 9.5c-3.1 7.5-3.1 15.9 0 23.4 1.5 3.5 3.6 6.8 6.4 9.4 5.7 5.6 13.3 8.6 21.3 8.6 5.7 0 10.8-1.3 15.1-3.7 4.1-2.3 7.6-5.5 10.1-9.5.5-.9.6-2 .3-2.9-.4-.8-1-1.6-1.8-2.2zm60.2 11.7-17.9-26.2 15.3-20.2c.7-.9 1-2.2.6-3.3-.3-.8-1-1.6-2.9-1.6h-12.1c-.7 0-1.4.2-2 .5-.8.4-1.4 1-1.8 1.7l-12.2 17.1h-2.9v-40.4c0-.8-.3-1.6-.9-2.2s-1.3-.9-2.1-.9h-11.3c-.8 0-1.6.3-2.2.9s-.9 1.3-.9 2.2v74.5c0 .9.3 1.6.9 2.2s1.4.9 2.2.9h11.3c.8 0 1.6-.3 2.1-.9.6-.6.9-1.4.9-2.2v-19.7h3.2l13.3 20.4c.8 1.5 2.3 2.4 3.9 2.4h12.7c1.9 0 2.7-.9 3.1-1.7.5-1.2.4-2.5-.3-3.5zm-281.8-51.4h-12.7c-1 0-1.9.3-2.6 1-.6.6-1 1.3-1.2 2.1l-9.4 34.8h-2.3l-10-34.8c-.2-.7-.5-1.4-1-2.1-.6-.7-1.4-1.1-2.3-1.1h-12.9c-1.7 0-2.7.5-3.2 1.7-.3 1-.3 2.1 0 3.1l16 49c.3.7.6 1.5 1.2 2 .6.6 1.5.9 2.4.9h6.8l-.6 1.6-1.5 4.5c-.5 1.4-1.3 2.6-2.5 3.5-1.1.8-2.4 1.3-3.8 1.2-1.2 0-2.3-.3-3.4-.7-1.1-.5-2.1-1.1-3-1.8-.8-.6-1.8-.9-2.9-.9h-.1c-1.2.1-2.3.7-2.9 1.8l-4 5.9c-1.6 2.6-.7 4.2.3 5.1 2.2 2 4.7 3.5 7.5 4.4 3.1 1.1 6.3 1.6 9.5 1.6 5.8 0 10.6-1.6 14.3-4.7 3.8-3.4 6.7-7.8 8.1-12.8l18.6-60.6c.4-1.1.5-2.2.1-3.2-.1-.7-.8-1.5-2.5-1.5zm0 0"
-                                    fill="#011b33"
-                                  />
-                                </svg>
-                              </span>
-                            </div>
-                            {selectPayment === "paystack" && (
-                              <span
-                                data-aos="zoom-in"
-                                className="absolute text-white z-10 w-6 h-6 rounded-full bg-qpurple -right-2.5 -top-2.5"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-6 w-6"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </span>
-                            )}
-                          </div>
-                        )}
+
+
+
+
+
+
                         {paypalStatus && (
                           <div
                             onClick={() => setPaymentMethod("paypal")}
-                            className={`payment-item text-center bg-[#F8F8F8] relative w-full h-[50px] font-bold text-sm text-white text-qpurple  rounded flex justify-center items-center px-3 uppercase rounded cursor-pointer ${
-                              selectPayment === "paypal"
-                                ? "border-2 border-qpurple"
-                                : "border border-qpurplelow/10"
-                            }`}
+                            className={`payment-item text-center bg-[#F8F8F8] relative w-full h-[50px] font-bold text-sm text-white text-qpurple  rounded flex justify-center items-center px-3 uppercase rounded cursor-pointer ${selectPayment === "paypal"
+                              ? "border-2 border-qpurple"
+                              : "border border-qpurplelow/10"
+                              }`}
                           >
                             <div className="w-full flex justify-center">
+                              <h4 className="text-black">Skipcash</h4>
                               <span>
-                                <svg
+
+                                {/* <svg width="400" height="50" viewBox="350 -50 1024 720" xmlns="http://www.w3.org/2000/svg">
+                                  <g id="layer1">
+                                    <path d="M240,200 L240,100 C340,100 440,200 340,200 Z" fill="#0078D4" />
+                                    <path d="M240,400 L240,500 C340,500 440,400 340,400 Z" fill="#00A4EF" />
+                                    <path d="M240,300 L240,200 C340,200 440,300 340,300 Z" fill="#2D8CFF" fill-opacity="0.8" />
+                                    <text x="480" y="280" font-family="Arial" font-size="200" fill="#0046AB">SkipCash</text>
+                                  </g>
+                                </svg> */}
+
+                                {/* <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   className="w-24 h-24"
                                   viewBox="-.02682843 0 123.63183286 30.17842908"
@@ -2206,7 +1862,7 @@ function CheakoutPage() {
                                     d="m9.614 7.699a1.169 1.169 0 0 1 1.159-.991h7.352c.871 0 1.684.057 2.426.177a9.757 9.757 0 0 1 1.481.353c.365.121.704.264 1.017.429.368-2.347-.003-3.945-1.272-5.392-1.399-1.593-3.924-2.275-7.155-2.275h-9.38c-.66 0-1.223.48-1.325 1.133l-3.907 24.765a.806.806 0 0 0 .795.932h5.791l1.454-9.225z"
                                     fill="#253b80"
                                   />
-                                </svg>
+                                </svg> */}
                               </span>
                             </div>
                             {selectPayment === "paypal" && (
@@ -2230,229 +1886,14 @@ function CheakoutPage() {
                             )}
                           </div>
                         )}
-                        {bankPaymentStatus && (
-                          <div
-                            onClick={() => setPaymentMethod("bankpayment")}
-                            className={`payment-item text-center bg-[#F8F8F8] relative w-full h-[50px] font-bold text-sm text-white text-qpurple  rounded flex justify-center items-center px-3 uppercase rounded cursor-pointer ${
-                              selectPayment === "bankpayment"
-                                ? "border-2 border-qpurple"
-                                : "border border-qpurplelow/10"
-                            }`}
-                          >
-                            <div className="w-full">
-                              <span className="text-qblack font-bold text-base">
-                                {langCntnt && langCntnt.Bank_Payment}
-                              </span>
-                            </div>
-                            {selectPayment === "bankpayment" && (
-                              <span
-                                data-aos="zoom-in"
-                                className="absolute text-white z-10 w-6 h-6 rounded-full bg-qpurple -right-2.5 -top-2.5"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-6 w-6"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </span>
-                            )}
-                          </div>
-                        )}
-                        {sslStatus && (
-                          <div
-                            onClick={() => setPaymentMethod("sslcommerce")}
-                            className={`payment-item text-center bg-[#F8F8F8] relative w-full h-[50px] font-bold text-sm text-white text-qpurple  rounded flex justify-center items-center px-3 uppercase rounded cursor-pointer ${
-                              selectPayment === "sslcommerce"
-                                ? "border-2 border-qpurple"
-                                : "border border-qpurplelow/10"
-                            }`}
-                          >
-                            <div className="w-full flex justify-center">
-                              <span className="text-qblack font-bold text-base">
-                                <Sslcommerce />
-                              </span>
-                            </div>
-                            {selectPayment === "sslcommerce" && (
-                              <span
-                                data-aos="zoom-in"
-                                className="absolute text-white z-10 w-6 h-6 rounded-full bg-qpurple -right-2.5 -top-2.5"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-6 w-6"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </span>
-                            )}
-                          </div>
-                        )}
+
+
                       </div>
                     </div>
                     {/*stripe*/}
-                    {selectPayment === "stripe" && (
-                      <>
-                        <div
-                          onClick={() => setPaymentMethod("")}
-                          className="w-full h-full fixed left-0 top-0 z-10"
-                        ></div>
-                        <div
-                          style={{ zIndex: "999" }}
-                          data-aos="zoom-in"
-                          className="w-[359px] bg-white shadow-2xl p-2 rounded absolute -left-10 top-0"
-                        >
-                          <div className="stripe-inputs">
-                            <div className="input-item mb-5">
-                              <InputCom
-                                placeholder="Number"
-                                name="number"
-                                type="text"
-                                inputClasses="h-[50px]"
-                                value={strpeNumber}
-                                inputHandler={(e) =>
-                                  setStrpeNumber(e.target.value)
-                                }
-                                error={
-                                  !!(
-                                    stripeError &&
-                                    Object.hasOwn(stripeError, "card_number")
-                                  )
-                                }
-                              />
-                              {stripeError &&
-                              Object.hasOwn(stripeError, "card_number") ? (
-                                <span className="text-sm mt-1 text-qred">
-                                  {stripeError.card_number[0]}
-                                </span>
-                              ) : (
-                                ""
-                              )}
-                            </div>
-                            <div className="flex space-x-2 items-center">
-                              <div className="input-item mb-5">
-                                <InputCom
-                                  placeholder="Expire Date"
-                                  name="date"
-                                  type="date"
-                                  inputClasses="h-[50px]"
-                                  value={expireDate && expireDate.value}
-                                  inputHandler={(e) => dateHandler(e)}
-                                  error={
-                                    !!(
-                                      stripeError &&
-                                      Object.hasOwn(stripeError, "month") &&
-                                      Object.hasOwn(stripeError, "year")
-                                    )
-                                  }
-                                />
-                                {stripeError &&
-                                Object.hasOwn(stripeError, "month") &&
-                                Object.hasOwn(stripeError, "year") ? (
-                                  <span className="text-sm mt-1 text-qred">
-                                    Date in required
-                                  </span>
-                                ) : (
-                                  ""
-                                )}
-                              </div>
-                              <div className="input-item mb-5">
-                                <InputCom
-                                  placeholder="CVV"
-                                  name="cvv"
-                                  type="text"
-                                  inputClasses="h-[50px]"
-                                  value={cvv}
-                                  inputHandler={(e) => setCvv(e.target.value)}
-                                  error={
-                                    !!(
-                                      stripeError &&
-                                      Object.hasOwn(stripeError, "cvv")
-                                    )
-                                  }
-                                />
-                                {stripeError &&
-                                Object.hasOwn(stripeError, "cvv") ? (
-                                  <span className="text-sm mt-1 text-qred">
-                                    {stripeError.cvv[0]}
-                                  </span>
-                                ) : (
-                                  ""
-                                )}
-                              </div>
-                            </div>
-                            <div className="input-item mb-5">
-                              <InputCom
-                                placeholder="Card Holder"
-                                name="card"
-                                type="text"
-                                inputClasses="h-[50px]"
-                                value={cardHolderName}
-                                inputHandler={(e) =>
-                                  setHolderName(e.target.value)
-                                }
-                              />
-                            </div>
-                            <button
-                              type="button"
-                              onClick={placeOrderHandler}
-                              className="w-full"
-                            >
-                              <div className="w-full h-[50px] rounded transition-common bg-qpurple hover:bg-qpurplelow/10 hover:text-qpurple text-white flex justify-center items-center">
-                                <span className="text-sm font-semibold">
-                                  {langCntnt && langCntnt.Place_Order_Now}
-                                </span>
-                                {strpLoad && (
-                                  <span
-                                    className="w-5 "
-                                    style={{ transform: "scale(0.3)" }}
-                                  >
-                                    <LoaderStyleOne />
-                                  </span>
-                                )}
-                              </div>
-                            </button>
-                          </div>
-                        </div>
-                      </>
-                    )}
+
                   </div>
-                  {selectPayment === "bankpayment" && (
-                    <div className="w-full bank-inputs mt-5">
-                      <div className="input-item mb-5">
-                        <div className="bank-info-alert w-full p-5 bg-amber-100 rounded mb-4 overflow-x-scroll">
-                          <pre className="w-full table table-fixed">
-                            {bankInfo.account_info}
-                          </pre>
-                        </div>
-                        <h6 className="input-label  capitalize text-[13px] font-600 leading-[24px] text-qblack block mb-2 ">
-                          {langCntnt && langCntnt.Transaction_Information}*
-                        </h6>
-                        <textarea
-                          name=""
-                          id=""
-                          cols="5"
-                          rows="7"
-                          value={transactionInfo}
-                          onChange={(e) => setTransactionInfo(e.target.value)}
-                          className={`w-full focus:ring-0 rounded focus:outline-none py-3 px-4 border  placeholder:text-sm text-sm`}
-                          placeholder={"Example:\r\n" + bankInfo.account_info}
-                        ></textarea>
-                      </div>
-                    </div>
-                  )}
+
                   <button
                     type="button"
                     onClick={placeOrderHandler}
