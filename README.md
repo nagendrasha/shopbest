@@ -37,3 +37,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 product image size: 600 x 640# front-end
 # shop2best
+# shop2best
